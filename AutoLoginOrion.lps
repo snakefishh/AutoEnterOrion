@@ -2,8 +2,8 @@
 <CONFIG>
   <ProjectSession>
     <PathDelim Value="\"/>
-    <Version Value="11"/>
-    <BuildModes Active="Default"/>
+    <Version Value="12"/>
+    <BuildModes Active="Release"/>
     <Units Count="2">
       <Unit0>
         <Filename Value="AutoLoginOrion.lpr"/>
@@ -26,7 +26,7 @@
     <JumpHistory HistoryIndex="-1"/>
     <RunParams>
       <FormatVersion Value="2"/>
-      <Modes Count="0" ActiveMode=""/>
+      <Modes ActiveMode=""/>
     </RunParams>
   </ProjectSession>
 </CONFIG>

@@ -14,7 +14,6 @@ uses
 
 begin
   RequireDerivedFormResource:=True;
-  Application.Title:='AutoLoginOrion';
   Application.Scaled:=True;
   Application.Initialize;
   Application.CreateForm(TForm1, Form1);
