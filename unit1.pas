@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, lcltype,
-  ExtCtrls, Menus, UniqueInstance, FileUtil, Windows;
+  ExtCtrls, Menus, UniqueInstance, FileUtil, Windows, INIFiles;
 
 type
 
@@ -35,7 +35,9 @@ type
     procedure Timer1Timer(Sender: TObject);
     procedure TrayIcon1Click(Sender: TObject);
   private
-    F: TextFile;
+    IniF: TINIFile;
+    //F: TextFile;
+    ver: String;
     pass: string;
     bCreationFinished: boolean;
   public
@@ -56,10 +58,15 @@ begin
   Self.WindowState := wsMinimized;
   bCreationFinished := False;
 
-  AssignFile(F, 'AutoLoginOrion.cfg');
-  Reset(F);
-  Read(F, pass);
-  CloseFile(F);
+  //AssignFile(F, 'AutoLoginOrion.cfg');
+  //Reset(F);
+  //Read(F, pass);
+  //CloseFile(F);
+
+
+  IniF:= TINIFile.Create('AutoLoginOrion.ini');
+  Self.ver:= IniF.ReadString('config','ver','1');
+  Self.pass:= IniF.ReadString('config','pass','1');
 
   ImageList1.GetIcon(0, TrayIcon1.Icon);
 
@@ -107,10 +114,6 @@ begin
   ImageList1.GetIcon(0, TrayIcon1.Icon);
   CheckBox1.Checked := True;
 
-  AssignFile(F, 'AutoLoginOrion.cfg');
-  Reset(F);
-  Read(F, pass);
-  CloseFile(F);
 end;
 
 procedure TForm1.MenuItem2Click(Sender: TObject);  //OFF
@@ -137,24 +140,42 @@ end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 var
-  wnd, edit, panel: HWND;
+  wnd, edit, panel, p1, p2: HWND;
 begin
-  wnd := FindWindow('TfrmSetMark', nil);
-  if not IsWindowVisible(wnd) then
-    exit;
-  if wnd <> 0 then
-  begin
-    panel := FindWindowEx(wnd, 0, 'TPanel', nil);
-    if panel <> 0 then
-    begin
-      edit := FindWindowEx(panel, 0, 'TEdit', nil);
-      if edit <> 0 then
+  if Self.ver='1' then begin
+      wnd := FindWindow('TfrmSetMark', nil);
+      if not IsWindowVisible(wnd) then
+        exit;
+      if wnd <> 0 then
       begin
-        SendMessage(edit, WM_SETTEXT, 0, lparam(PChar(Self.pass)));
-        PostMessage(edit, WM_KEYDOWN, VK_RETURN, 0);
+        panel := FindWindowEx(wnd, 0, 'TPanel', nil);
+        if panel <> 0 then
+        begin
+          edit := FindWindowEx(panel, 0, 'TEdit', nil);
+          if edit <> 0 then
+          begin
+            SendMessage(edit, WM_SETTEXT, 0, lparam(PChar(Self.pass)));
+            PostMessage(edit, WM_KEYDOWN, VK_RETURN, 0);
+          end;
+        end;
       end;
-    end;
-  end;
+    end else
+   if Self.ver='2' then begin
+     wnd := FindWindow('TfrmSetMark', nil);
+     if not IsWindowVisible(wnd) then
+        exit;
+      if wnd <> 0 then
+      begin
+        p1 := FindWindowEx(wnd, 0, 'TPanel', nil);
+        p2 := FindWindowEx(wnd, p1, 'TPanel', nil);
+        edit := FindWindowEx(p2, 0, 'TEdit', nil);
+        if edit <> 0 then
+          begin
+            SendMessage(edit, WM_SETTEXT, 0, lparam(PChar(Self.pass)));
+            PostMessage(edit, WM_KEYDOWN, VK_RETURN, 0);
+          end;
+      end;
+   end;
 end;
 
 end.
