@@ -37,7 +37,7 @@ type
   private
     IniF: TINIFile;
     //F: TextFile;
-    ver: String;
+    ver: string;
     pass: string;
     bCreationFinished: boolean;
   public
@@ -64,9 +64,9 @@ begin
   //CloseFile(F);
 
 
-  IniF:= TINIFile.Create('AutoLoginOrion.ini');
-  Self.ver:= IniF.ReadString('config','ver','1');
-  Self.pass:= IniF.ReadString('config','pass','1');
+  IniF := TINIFile.Create('AutoLoginOrion.ini');
+  Self.ver := IniF.ReadString('config', 'ver', '1');
+  Self.pass := IniF.ReadString('config', 'pass', '1');
 
   ImageList1.GetIcon(0, TrayIcon1.Icon);
 
@@ -140,42 +140,38 @@ end;
 
 procedure TForm1.Timer1Timer(Sender: TObject);
 var
-  wnd, edit, panel, p1, p2: HWND;
+  wnd, edit, panel: HWND;
 begin
-  if Self.ver='1' then begin
-      wnd := FindWindow('TfrmSetMark', nil);
-      if not IsWindowVisible(wnd) then
-        exit;
-      if wnd <> 0 then
-      begin
-        panel := FindWindowEx(wnd, 0, 'TPanel', nil);
-        if panel <> 0 then
-        begin
-          edit := FindWindowEx(panel, 0, 'TEdit', nil);
-          if edit <> 0 then
-          begin
-            SendMessage(edit, WM_SETTEXT, 0, lparam(PChar(Self.pass)));
-            PostMessage(edit, WM_KEYDOWN, VK_RETURN, 0);
-          end;
-        end;
-      end;
-    end else
-   if Self.ver='2' then begin
-     wnd := FindWindow('TfrmSetMark', nil);
-     if not IsWindowVisible(wnd) then
-        exit;
-      if wnd <> 0 then
-      begin
-        p1 := FindWindowEx(wnd, 0, 'TPanel', nil);
-        p2 := FindWindowEx(wnd, p1, 'TPanel', nil);
-        edit := FindWindowEx(p2, 0, 'TEdit', nil);
-        if edit <> 0 then
-          begin
-            SendMessage(edit, WM_SETTEXT, 0, lparam(PChar(Self.pass)));
-            PostMessage(edit, WM_KEYDOWN, VK_RETURN, 0);
-          end;
-      end;
-   end;
+  wnd := FindWindow('TfrmSetMark', nil);
+
+  if wnd = 0 then
+    Exit;
+
+  if not IsWindowVisible(wnd) then
+    Exit;
+
+  // Перебираем ВСЕ TPanel
+  panel := 0;
+
+  while True do
+  begin
+    panel := FindWindowEx(wnd, panel, 'TPanel', nil);
+
+    if panel = 0 then
+      Break;
+
+    // Ищем TEdit внутри этой панели
+    edit := FindWindowEx(panel, 0, 'TEdit', nil);
+
+    if edit <> 0 then
+    begin
+      SendMessage(edit, WM_SETTEXT, 0, LPARAM(PChar(Self.pass)));
+
+      PostMessage(edit, WM_KEYDOWN, VK_RETURN, 0);
+
+      Exit; // нашли нужную панель и TEdit
+    end;
+  end;
 end;
 
 end.
